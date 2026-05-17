@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Skincare"/>
+<meta name="theme-color" content="#F9F9F7"/>
+<title>Skincare Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:#F9F9F7;font-family:'Cormorant Garamond',Georgia,serif;color:#111;overscroll-behavior:none;}
+::-webkit-scrollbar{width:0;}
+#app{max-width:520px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom,24px);min-height:100vh;}
+.hd{padding:52px 28px 24px;border-bottom:1px solid #EAEAE8;}
+.eyebrow{font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:.24em;color:#BEBEBE;text-transform:uppercase;margin-bottom:10px;}
+.title{font-size:42px;font-weight:300;line-height:1.05;letter-spacing:-.5px;}
+.title em{font-style:italic;color:#B0B0AE;}
+.dateline{font-family:'DM Sans',sans-serif;font-size:10px;color:#C8C8C6;margin-top:12px;letter-spacing:.06em;}
+.stats{display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid #EAEAE8;}
+.stat{display:flex;flex-direction:column;}
+.stat-val{font-size:22px;font-weight:300;color:#111;line-height:1;}
+.stat-lbl{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.16em;color:#C0C0BE;text-transform:uppercase;margin-top:3px;}
+.divider{width:1px;height:28px;background:#E8E8E6;flex-shrink:0;}
+.prog-track{flex:1;height:2px;background:#EAEAE8;border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:#1A1A1A;border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1);}
+.done-badge{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.2em;color:#3D9E72;text-transform:uppercase;flex-shrink:0;}
+.nav-row{display:flex;padding:0 28px;border-bottom:1px solid #EAEAE8;}
+.nav-btn,.phase-btn{flex:1;padding:11px 0;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid #EAEAE8;color:#C0C0BE;cursor:pointer;transition:all .2s;}
+.nav-btn.on,.phase-btn.on{color:#111;border-bottom-color:#111;}
+.ct{padding:0 28px 40px;}
+.sec-head{display:flex;align-items:center;gap:10px;margin:26px 0 12px;}
+.sec-head span{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:.22em;color:#BEBEBE;text-transform:uppercase;white-space:nowrap;}
+.sec-head hr{flex:1;border:none;border-top:1px solid #EAEAE8;}
+.card{display:flex;gap:14px;padding:16px 18px;background:#fff;border:1px solid #EAEAE8;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .18s;box-shadow:0 1px 4px rgba(0,0,0,.03);-webkit-user-select:none;user-select:none;}
+.card.checked{background:#F5FBF8;border-color:#B8DEC9;box-shadow:none;}
+.card:active{transform:scale(.985);}
+.check-circle{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:2px;background:transparent;border:1.5px solid #D0D0CE;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.check-circle::after{content:"";width:10px;height:10px;border-radius:50%;background:transparent;transition:background .2s;}
+.card.checked .check-circle::after,.prod-acc-head.checked .check-circle::after{background:#1A1A1A;}
+.card.checked .check-circle,.prod-acc-head.checked .check-circle{border-color:#1A1A1A;}
+.card-body{flex:1;}
+.pill{display:inline-block;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.15em;padding:2px 9px;border-radius:99px;margin-bottom:6px;font-weight:500;}
+.card-name{font-size:15px;font-weight:400;color:#111;line-height:1.25;font-family:'Cormorant Garamond',Georgia,serif;}
+.card-detail{font-family:'DM Sans',sans-serif;font-size:11px;color:#999;margin-top:3px;}
+.card-hint{font-family:'DM Sans',sans-serif;font-size:10px;color:#C4C4C2;margin-top:3px;}
+.loc-row{display:flex;gap:8px;margin-bottom:14px;}
+.loc-btn{font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:7px 18px;border-radius:99px;border:1.5px solid #E0E0DE;background:none;color:#C0C0BE;cursor:pointer;transition:all .18s;}
+.loc-btn.home{border-color:#3D9E72;color:#3D9E72;background:#F0FAF5;}
+.loc-btn.away{border-color:#C47B3A;color:#C47B3A;background:#FDF4EC;}
+.info-box{padding:13px 15px;border-radius:10px;margin-bottom:8px;margin-top:-2px;}
+.info-box.orange{background:#FEF6EE;display:flex;gap:10px;align-items:flex-start;}
+.info-box.grey{background:#F7F7F5;border-left:2px solid #DEDED8;margin-top:20px;}
+.info-box.blue{background:#EEF4FE;border-left:2px solid #AECBF5;margin-top:8px;}
+.info-label{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.2em;color:#C0C0BE;text-transform:uppercase;margin-bottom:5px;}
+.info-text{font-family:'DM Sans',sans-serif;font-size:11px;color:#A8A8A6;line-height:1.7;}
+.info-text.orange{color:#B07030;}
+.info-text.blue{color:#3A6BB0;}
+.alt-hint{font-family:'DM Sans',sans-serif;font-size:10px;color:#C4C4C2;margin-bottom:12px;}
+.apply-note{font-family:'DM Sans',sans-serif;font-size:11px;color:#C4C4C2;line-height:1.7;margin-top:12px;}
+.log-section{margin-top:36px;padding-top:20px;border-top:1px solid #EAEAE8;}
+.log-label{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.22em;color:#C0C0BE;text-transform:uppercase;margin-bottom:14px;}
+.log-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #F4F4F2;}
+.log-dot{width:6px;height:6px;border-radius:50%;background:#3D9E72;flex-shrink:0;}
+.log-name{font-family:'DM Sans',sans-serif;font-size:12px;color:#555;}
+.log-sub{font-family:'DM Sans',sans-serif;font-size:10px;color:#C8C8C6;}
+.log-empty{font-family:'DM Sans',sans-serif;font-size:12px;color:#D4D4D2;font-style:italic;}
+.hist-wrap{padding:8px 28px 60px;}
+.hist-day{margin-top:24px;padding-top:20px;border-top:1px solid #EAEAE8;}
+.hist-day-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.hist-day-lbl{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;}
+.hist-day-hd hr{flex:1;border:none;border-top:1px solid #EAEAE8;}
+.hist-count{font-family:'DM Sans',sans-serif;font-size:10px;color:#C0C0BE;flex-shrink:0;}
+.hist-nothing{font-family:'DM Sans',sans-serif;font-size:10px;color:#D0D0CE;font-style:italic;}
+.hist-group-lbl{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.18em;color:#C8C8C6;text-transform:uppercase;margin-bottom:4px;margin-top:8px;}
+.hist-prod{display:flex;align-items:center;gap:10px;padding:7px 12px;background:#F9F9F7;border-radius:8px;margin-bottom:4px;}
+.hist-prod-name{font-family:'DM Sans',sans-serif;font-size:12px;color:#444;}
+.hist-prod-detail{font-family:'DM Sans',sans-serif;font-size:10px;color:#C0C0BE;}
+.hist-empty{padding:60px 0;text-align:center;}
+.hist-empty-title{font-size:28px;font-weight:300;color:#C8C8C6;font-style:italic;}
+.hist-empty-sub{font-family:'DM Sans',sans-serif;font-size:12px;color:#D0D0CE;margin-top:8px;}
+/* DATE NAV */
+.date-nav{display:flex;align-items:center;gap:10px;padding:10px 28px;border-bottom:1px solid #EAEAE8;background:#FAFAF8;}
+.date-nav-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid #E0E0DE;background:none;cursor:pointer;font-size:16px;font-family:'DM Sans',sans-serif;line-height:1;color:#999;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
+.date-nav-btn:hover{border-color:#111;color:#111;}
+.date-nav-btn:disabled{opacity:.3;cursor:not-allowed;}
+.date-nav-center{flex:1;text-align:center;}
+.date-nav-label{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#111;letter-spacing:.04em;}
+.date-nav-sub{font-family:'DM Sans',sans-serif;font-size:9px;color:#C0C0BE;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.date-nav-today{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:5px 12px;border-radius:99px;border:1.5px solid #E0E0DE;background:none;color:#C0C0BE;cursor:pointer;transition:all .18s;flex-shrink:0;}
+.date-nav-today:hover{border-color:#111;color:#111;}
+.past-banner{background:#FEF9EE;border-bottom:1px solid #F0E8D0;padding:8px 28px;font-family:'DM Sans',sans-serif;font-size:10px;color:#B08040;letter-spacing:.08em;display:none;}
+.past-banner.show{display:block;}
+/* PRODUCT DEEP CARDS */
+.prod-accordion{margin-bottom:8px;}
+.prod-acc-head{display:flex;gap:14px;padding:16px 18px;background:#fff;border:1px solid #EAEAE8;border-radius:12px;cursor:pointer;transition:all .18s;box-shadow:0 1px 4px rgba(0,0,0,.03);-webkit-user-select:none;user-select:none;}
+.prod-acc-head.checked{background:#F5FBF8;border-color:#B8DEC9;box-shadow:none;}
+.prod-acc-head.open{border-radius:12px 12px 0 0;border-bottom-color:transparent;}
+.prod-acc-body{display:none;background:#FAFAF8;border:1px solid #EAEAE8;border-top:none;border-radius:0 0 12px 12px;padding:14px 18px;font-family:'DM Sans',sans-serif;}
+.prod-acc-body.open{display:block;}
+.prod-acc-body.checked-body{background:#F5FBF8;border-color:#B8DEC9;}
+.prod-expand-btn{margin-left:auto;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.14em;color:#C0C0BE;text-transform:uppercase;flex-shrink:0;align-self:center;padding-left:8px;}
+.prod-row{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.prod-badge{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.12em;padding:3px 9px;border-radius:99px;background:#F0F0EE;color:#888;text-transform:uppercase;}
+.prod-badge.green{background:#EBF6EF;color:#3D9E72;}
+.prod-badge.purple{background:#F3EEFA;color:#7B5EA7;}
+.prod-badge.orange{background:#FEF4EA;color:#C47B3A;}
+.prod-badge.blue{background:#EAF2FB;color:#3A7BC4;}
+.prod-section-label{font-size:9px;letter-spacing:.18em;color:#C0C0BE;text-transform:uppercase;margin-bottom:4px;margin-top:10px;}
+.prod-section-text{font-size:11px;color:#888;line-height:1.75;margin-bottom:0;}
+.prod-ingredient-grid{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.prod-ingredient{display:flex;gap:8px;align-items:flex-start;}
+.prod-ing-dot{width:4px;height:4px;border-radius:50%;background:#D0D0CE;flex-shrink:0;margin-top:6px;}
+.prod-ing-name{font-size:11px;color:#555;font-weight:500;}
+.prod-ing-detail{font-size:10px;color:#AEAEAC;margin-top:1px;}
+/* GUIDE TAB */
+.guide-wrap{padding:0 28px 60px;}
+.guide-section{margin-top:28px;padding-top:22px;border-top:1px solid #EAEAE8;}
+.guide-section:first-child{border-top:none;margin-top:0;padding-top:28px;}
+.guide-label{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.22em;color:#BEBEBE;text-transform:uppercase;margin-bottom:14px;}
+.guide-card{background:#fff;border:1px solid #EAEAE8;border-radius:12px;padding:16px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.03);}
+.guide-card-name{font-size:16px;font-weight:300;color:#111;margin-bottom:6px;}
+.guide-card-sub{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;line-height:1.7;margin-bottom:10px;}
+.guide-rule{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #F4F4F2;}
+.guide-rule:last-child{border-bottom:none;}
+.guide-rule-icon{font-size:14px;flex-shrink:0;}
+.guide-rule-text{font-family:'DM Sans',sans-serif;font-size:11px;color:#666;line-height:1.65;}
+.guide-rule-text strong{color:#333;}
+/* SYNC TAB */
+.sync-wrap{padding:0 28px 60px;}
+.sync-section{margin-top:28px;padding-top:22px;border-top:1px solid #EAEAE8;}
+.sync-section:first-child{border-top:none;margin-top:0;padding-top:28px;}
+.sync-label{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.22em;color:#BEBEBE;text-transform:uppercase;margin-bottom:14px;}
+.sync-card{background:#fff;border:1px solid #EAEAE8;border-radius:12px;padding:20px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.03);}
+.sync-card-title{font-size:16px;font-weight:300;color:#111;margin-bottom:6px;}
+.sync-card-sub{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;line-height:1.7;margin-bottom:16px;}
+.sync-input{width:100%;padding:10px 14px;border:1.5px solid #E0E0DE;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#111;background:#F9F9F7;outline:none;transition:border .2s;margin-bottom:10px;}
+.sync-input:focus{border-color:#111;}
+.sync-btn{width:100%;padding:12px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.sync-btn.primary{background:#111;color:#fff;}
+.sync-btn.primary:hover{background:#333;}
+.sync-btn.primary:disabled{background:#CCC;cursor:not-allowed;}
+.sync-btn.secondary{background:#F0F0EE;color:#666;}
+.sync-btn.secondary:hover{background:#E8E8E6;}
+.sync-btn.danger{background:#FEF0EE;color:#C44A3A;border:1.5px solid #F5C5BE;}
+.sync-btn.danger:hover{background:#FDE8E5;}
+.sync-status{font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:.08em;padding:8px 12px;border-radius:6px;margin-bottom:10px;display:none;}
+.sync-status.show{display:block;}
+.sync-status.ok{background:#EBF6EF;color:#3D9E72;}
+.sync-status.err{background:#FEF0EE;color:#C44A3A;}
+.sync-status.info{background:#EEF4FE;color:#3A6BB0;}
+.sync-indicator{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;background:#F7F7F5;margin-bottom:16px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#D0D0CE;flex-shrink:0;}
+.sync-dot.connected{background:#3D9E72;}
+.sync-dot.syncing{background:#C47B3A;animation:pulse .8s infinite;}
+.sync-dot.error{background:#C44A3A;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sync-indicator-text{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;}
+.divider-or{display:flex;align-items:center;gap:12px;margin:16px 0;}
+.divider-or span{font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.2em;color:#C8C8C6;text-transform:uppercase;}
+.divider-or hr{flex:1;border:none;border-top:1px solid #EAEAE8;}
+/* TOAST */
+.toast{position:fixed;bottom:calc(28px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(20px);background:#111;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:.04em;padding:13px 28px;border-radius:99px;z-index:9999;pointer-events:none;white-space:nowrap;opacity:0;}
+.toast.show{animation:su 3.2s cubic-bezier(.22,1,.36,1) forwards;}
+@keyframes su{0%{opacity:0;transform:translateX(-50%) translateY(20px)}12%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script type="module">
+
+// ── FIREBASE ─────────────────────────────────────
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue, off } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const STORAGE_KEY='skincare_log_v3', STREAK_KEY='skincare_streak_v3', SYNC_KEY='skincare_sync_config';
+
+// ── SYNC STATE ────────────────────────────────────
+let firebaseApp=null, db=null, syncListener=null;
+let syncConfig = loadSyncConfig();
+let syncStatus = 'idle'; // idle | connecting | connected | error
+
+function loadSyncConfig(){
+  try{ return JSON.parse(localStorage.getItem(SYNC_KEY)||'null'); }
+  catch{ return null; }
+}
+function saveSyncConfig(c){
+  try{ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }catch{}
+}
+
+function getSyncStatusText(){
+  if(!syncConfig) return 'Not configured';
+  if(syncStatus==='connecting') return 'Connecting…';
+  if(syncStatus==='connected') return 'Synced · '+syncConfig.userId;
+  if(syncStatus==='error') return 'Sync error — check config';
+  return 'Configured · not active';
+}
+function getSyncDotClass(){
+  if(syncStatus==='connected') return 'connected';
+  if(syncStatus==='connecting') return 'syncing';
+  if(syncStatus==='error') return 'error';
+  return '';
+}
+
+async function initFirebase(config, userId){
+  try{
+    if(firebaseApp){
+      // detach old listener
+      if(syncListener){ off(syncListener); syncListener=null; }
+    }
+    syncStatus='connecting'; renderSyncStatus();
+    firebaseApp = initializeApp(config, 'skincare-'+Date.now());
+    db = getDatabase(firebaseApp);
+    const userRef = ref(db, 'users/'+userId+'/data');
+    // Push local data up first
+    const localLog = loadLog();
+    const localStreak = loadStreak();
+    await set(ref(db,'users/'+userId+'/log'), localLog);
+    await set(ref(db,'users/'+userId+'/streak'), localStreak);
+    // Then listen for changes
+    syncListener = userRef;
+    onValue(ref(db,'users/'+userId+'/log'), snap => {
+      const remote = snap.val();
+      if(remote){
+        ST.log = remote;
+        saveLog(remote);
+        render();
+      }
+    });
+    syncStatus='connected';
+    saveSyncConfig({...config, userId});
+    syncConfig={...config, userId};
+    showToast('Firebase sync active ✓');
+    renderSyncStatus();
+  } catch(e){
+    syncStatus='error';
+    renderSyncStatus();
+    showToast('Sync failed — check config');
+    console.error(e);
+  }
+}
+
+async function pushToFirebase(log, streak){
+  if(!db||!syncConfig||syncStatus!=='connected') return;
+  try{
+    await set(ref(db,'users/'+syncConfig.userId+'/log'), log);
+    await set(ref(db,'users/'+syncConfig.userId+'/streak'), streak);
+  }catch(e){ console.error('Push failed',e); }
+}
+
+function disconnectFirebase(){
+  if(syncListener){ off(ref(db,'users/'+syncConfig.userId+'/log')); syncListener=null; }
+  db=null; firebaseApp=null;
+  syncStatus='idle';
+  syncConfig=null;
+  localStorage.removeItem(SYNC_KEY);
+  showToast('Sync disconnected');
+  renderSyncStatus();
+}
+
+function renderSyncStatus(){
+  const el=document.getElementById('sync-indicator-dot');
+  const tx=document.getElementById('sync-indicator-text');
+  if(el){ el.className='sync-dot '+getSyncDotClass(); }
+  if(tx){ tx.textContent=getSyncStatusText(); }
+}
+
+// ── PRODUCT DATABASE ──────────────────────────────
+const CLEANSERS=[
+  {
+    id:'panoxyl4', name:'PanOxyl Acne Creamy Wash', detail:'4% Benzoyl Peroxide', hint:'Gentle · daily formula · mornings only',
+    tag:'CLEANSER', color:'#3A7BC4',
+    mechanism:'Benzoyl peroxide kills acne-causing bacteria (C. acnes) by releasing oxygen into the pore — bacteria are anaerobic and cannot survive. At 4%, this is the daily-use concentration that clears without over-stripping. Use in the morning only — BP residue oxidises adapalene and inactivates it, so PanOxyl must never be used the evening before adapalene.',
+    howToUse:'Wet face. Apply a small amount and massage gently for 30–60 seconds. Rinse fully. Pat dry — do not rub. Use in the morning only. Designated evening cleanser is Simple gel.',
+    ingredients:[
+      {name:'Benzoyl Peroxide 4%',detail:'Bactericidal · kills C. acnes · reduces comedone formation'},
+      {name:'Glycerin',detail:'Humectant · prevents dryness from BP'},
+      {name:'Carbomer',detail:'Thickener · helps distribute evenly across skin'},
+    ],
+    flags:['Morning use only','Can bleach towels — use white','Never use before adapalene evening'],
+    badgeColor:'blue',
+  },
+  {
+    id:'panoxyl10',name:'PanOxyl Acne Foaming Wash', detail:'10% Benzoyl Peroxide · Max Strength', hint:'High concentration · flare use only',
+    tag:'CLEANSER', color:'#3A7BC4',
+    mechanism:'Maximum OTC benzoyl peroxide strength. Same bactericidal mechanism as the 4% but significantly more aggressive. Reserve for flare days or body use (chest, back). Higher risk of dryness, irritation, and bleaching fabric.',
+    howToUse:'Use only during flare periods, not daily. Wet skin, apply small amount, leave 1–2 minutes, rinse. Always follow with moisturiser. Not ideal for daily facial use — prefer 4% for that. Morning use only.',
+    ingredients:[
+      {name:'Benzoyl Peroxide 10%',detail:'Max-strength bactericidal · best for chest/back acne'},
+      {name:'Sodium Laureth Sulfate',detail:'Surfactant · foaming action · can be drying'},
+    ],
+    flags:['Flare use only','Morning use only','Bleaches fabric — use white'],
+    badgeColor:'orange',
+  },
+  {
+    id:'simple', name:'Simple Daily Skin Detox', detail:'Purifying Gel Facial Wash', hint:'Witch hazel · zinc · thyme · designated evening cleanser',
+    tag:'CLEANSER', color:'#3A7BC4',
+    mechanism:'The designated evening cleanser — use this every night before adapalene. No benzoyl peroxide residue means adapalene stays chemically intact. Witch hazel provides mild astringency reducing excess sebum. Zinc gluconate is mildly anti-inflammatory. Good for lower-inflammation days in the morning too.',
+    howToUse:'Wet face. Dispense a pea-sized amount and lather. Massage gently 30 seconds. Rinse with cool or lukewarm water. Required for all evening cleansing before adapalene. Wait until skin is fully dry — 10 minutes — before applying adapalene.',
+    ingredients:[
+      {name:'Witch Hazel',detail:'Natural astringent · tightens pores · reduces sebum appearance'},
+      {name:'Zinc Gluconate',detail:'Anti-inflammatory · mild antimicrobial · sebum-regulating'},
+      {name:'Thyme Extract',detail:'Antimicrobial · antioxidant · skin-calming'},
+    ],
+    flags:['Designated evening cleanser','Fragrance-free','No BP — safe before adapalene'],
+    badgeColor:'green',
+  },
+];
+
+const HOME_TX=[
+  {
+    id:'salicylic_nose', name:'Salicylic Acid — Nose Only', detail:'BHA · 1–2% · indoor days only · adapalene nights only', hint:'Sebaceous filaments · pore clearing · optional',
+    tag:'BHA', color:'#3A7BC4',
+    mechanism:'Salicylic acid is oil-soluble — it penetrates directly into the pore and dissolves sebum from inside. This is the only mechanism that reaches sebaceous filaments — the normal pore lining that fills with sebum and causes the oily nose appearance. Azelaic acid cannot reach inside the pore. Salicylic acid can. Applied to the nose only because that is where the sebaceous filament problem is anatomically concentrated.',
+    howToUse:'Apply to nose only before azelaic acid — always salicylic acid first, azelaic acid second. Salicylic acid must penetrate clean open pores before any film sits on top. Use on indoor days only — mild photosensitivity. Only use the morning after an adapalene night, never after a tretinoin night when skin barrier is more compromised. Optional — not required every day.',
+    ingredients:[
+      {name:'Salicylic Acid 1–2%',detail:'BHA · oil-soluble · dissolves sebum inside pore · clears filaments'},
+    ],
+    flags:['Nose only — not full face','Indoor days only','After adapalene nights only — not tretinoin','Apply before azelaic acid','Optional'],
+    badgeColor:'blue',
+  },
+  {
+    id:'azelaic', name:'Azelaic Acid Gel 20%', detail:'Aziderm 20% W/W · every morning', hint:'Anti-blemish · brightening · PIH · daily',
+    tag:'AZELAIC ACID', color:'#7B5EA7',
+    mechanism:'Azelaic acid at 20% works through three simultaneous mechanisms: tyrosinase inhibition (rate-limiting enzyme in melanin synthesis, selectively suppressing hyperactive melanocytes — this is what makes it elite for PIH on darker skin tones), antibacterial activity against C. acnes without inducing antibiotic resistance, and keratolytic action normalising follicular keratinisation. Clinical trials show 60–67% inflammatory lesion reduction with twice daily use. Unlike most actives it continues improving progressively through 15 weeks rather than plateauing.',
+    howToUse:'Apply a pea-sized amount to the full face every morning after cleansing. Skin must be fully dry — wait 5–10 minutes post-wash. If using salicylic acid on the nose that day, apply salicylic acid first, wait 5 minutes, then azelaic acid over the top. Follow with SPF. Midday reapplication is optional — if you wash or bathe midday, reapplying azelaic acid afterward is legitimate and gives you the twice-daily clinical protocol benefit.',
+    ingredients:[
+      {name:'Azelaic Acid 20%',detail:'Tyrosinase inhibitor · reduces PIH · anti-inflammatory · bacteriostatic'},
+      {name:'Propylene Glycol',detail:'Humectant · helps penetration'},
+      {name:'Carbomer',detail:'Gel base · ensures even application'},
+    ],
+    flags:['Every morning — daily not alternate','Pea-sized · full face','Apply on dry skin','Midday reapplication optional after washing','Excellent for PIH on darker skin'],
+    badgeColor:'purple',
+  },
+];
+
+const AWAY_TX={
+  id:'spf', name:'Skin Aqua UV Super Moisture Gel', detail:'Rohto Mentholatum · SPF 50+ PA++++', hint:'Japanese sunscreen · lightweight · no white cast',
+  tag:'SUNSCREEN', color:'#C47B3A',
+  mechanism:'SPF 50+ blocks UVB radiation. PA++++ is the Japanese rating for UVA protection — four plus signs is the maximum, indicating very high protection against UVA rays that cause hyperpigmentation, photoageing, and worsen PIH. Without SPF, azelaic acid\'s tyrosinase inhibition is working against UV-driven melanin production simultaneously — you are working against yourself. SPF is not optional when PIH is a treatment goal.',
+  howToUse:'Apply as the final step of morning routine after all treatment products. Use a quarter teaspoon — about 2 finger-lengths — for the face. Most people underapply by 50%. Reapply every 2 hours outdoors. Critical when using adapalene which increases photosensitivity.',
+  ingredients:[
+    {name:'Uvinul A Plus',detail:'UVA filter · photostable · used in Japanese/EU formulas'},
+    {name:'Uvinul T 150',detail:'UVB filter · lightweight'},
+    {name:'Sodium Hyaluronate',detail:'Humectant · moisturising base'},
+    {name:'Glycerin',detail:'Hydration · gel texture'},
+  ],
+  flags:['Use generously — 1/4 tsp minimum','Reapply every 2 hrs outdoors','Critical with adapalene','No white cast on darker skin'],
+  badgeColor:'orange',
+};
+
+const NIGHT_TX={
+  id:'adapalene', name:'Differin Gel', detail:'Adapalene 0.1% · alternate with tretinoin when introduced', hint:'Retinoid · nightly · SPF mandatory next morning',
+  tag:'RETINOID', color:'#C47B3A',
+  mechanism:'Adapalene is a third-generation synthetic retinoid that selectively binds RAR-β and RAR-γ receptors — normalising follicular keratinisation and preventing microcomedone formation, the starting point of every acne lesion. Lower irritation profile than tretinoin because of receptor selectivity. Currently the sole night treatment. When tretinoin is introduced later, these will alternate — adapalene on off nights while tretinoin tolerance builds, eventually transitioning to tretinoin nightly.',
+  howToUse:'Cleanse with Simple gel (not PanOxyl — BP residue inactivates adapalene). Wait until skin is fully dry — 10 minutes minimum, damp skin amplifies irritation significantly. Apply a pea-sized amount to the entire face, not just spots. Wait 20 minutes before applying moisturiser. Morning after: SPF is non-negotiable — adapalene increases UV sensitivity.',
+  ingredients:[
+    {name:'Adapalene 0.1%',detail:'Third-gen retinoid · normalises cell turnover · prevents microcomedones · reduces PIH'},
+    {name:'Carbomer',detail:'Gel base · pH-stabilised formula'},
+    {name:'Edetate Disodium',detail:'Preservative chelator · formula stability'},
+  ],
+  flags:['Pea-sized for whole face','Simple cleanser only before this','Fully dry skin — 10 min wait','SPF non-negotiable next morning','8–12 weeks for full effect'],
+  badgeColor:'orange',
+};
+
+const MOISTURISERS=[
+  {
+    id:'dr_althea', name:'Dr.Althea 345 Relief Cream', detail:'PDRN · Niacinamide · Centella · Korean Vegan', hint:'Non-comedogenic · post-acne care · optional',
+    tag:'MOISTURISER', color:'#888',
+    mechanism:'PDRN stimulates skin healing and repair from acne damage. Niacinamide reduces PIH and strengthens barrier. Centella Asiatica has anti-inflammatory and wound healing action. Non-comedogenic.',
+    howToUse:'After adapalene has absorbed (5+ minutes), apply a thin layer. Optional — use when skin feels dry or tight from actives.',
+    ingredients:[
+      {name:'PDRN',detail:'Salmon DNA fragment · tissue repair · skin regeneration'},
+      {name:'Niacinamide',detail:'Anti-PIH · barrier-strengthening · sebum control'},
+      {name:'Centella Asiatica Extract',detail:'Anti-inflammatory · wound healing · soothing'},
+      {name:'Ceramides',detail:'Barrier restoration · moisture retention'},
+    ],
+    flags:['Non-comedogenic','Optional — use when skin is dry'],
+    badgeColor:'green',
+  },
+  {
+    id:'simple_moist', name:'Simple Kind to Skin', detail:'Hydrating Light Moisturiser', hint:'12-hr hydration · Borage seed oil · Vitamin E · optional',
+    tag:'MOISTURISER', color:'#888',
+    mechanism:'Lightweight fragrance-free moisturiser. Borage seed oil is high in GLA — an omega-6 that supports the skin barrier and has anti-inflammatory effects. Vitamin E is an antioxidant that neutralises free radical damage. Light texture doesn\'t block pores.',
+    howToUse:'Apply a small amount after actives have absorbed. Good fallback when Dr.Althea is unavailable. Fragrance-free — suitable even during sensitive phases of adapalene adjustment.',
+    ingredients:[
+      {name:'Borage Seed Oil',detail:'High GLA · anti-inflammatory · barrier support'},
+      {name:'Vitamin E (Tocopherol)',detail:'Antioxidant · free radical neutralisation'},
+      {name:'Glycerin',detail:'Humectant · draws moisture into skin'},
+      {name:'Pro-Vitamin B5 (Panthenol)',detail:'Soothing · aids skin repair'},
+    ],
+    flags:['Fragrance-free','Lightweight — acne-safe'],
+    badgeColor:'green',
+  },
+];
+
+function allProds(){return[...CLEANSERS,...HOME_TX,AWAY_TX,NIGHT_TX,...MOISTURISERS];}
+function loadLog(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');}catch{return{};}}
+function saveLog(l){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(l));}catch{}}
+function loadStreak(){try{return JSON.parse(localStorage.getItem(STREAK_KEY)||'{"count":0,"lastDate":null}');}catch{return{count:0,lastDate:null};}}
+
+function bumpStreak(s,dk){
+  const y=new Date();y.setDate(y.getDate()-1);
+  const yk=y.toISOString().split('T')[0];
+  let ns=s.lastDate===yk?{count:s.count+1,lastDate:dk}:s.lastDate===dk?s:{count:1,lastDate:dk};
+  try{localStorage.setItem(STREAK_KEY,JSON.stringify(ns));}catch{}
+  return ns;
+}
+
+let dateOffset=0;
+function getKey(offset){const d=new Date();d.setDate(d.getDate()+(offset||0));return d.toISOString().split('T')[0];}
+function todayKey(){return getKey(0);}
+function activeKey(){return getKey(dateOffset);}
+function fmtLabel(offset){
+  if(offset===0)return'Today';
+  if(offset===-1)return'Yesterday';
+  const d=new Date();d.setDate(d.getDate()+offset);
+  return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+}
+function fmtSub(offset){
+  const d=new Date();d.setDate(d.getDate()+offset);
+  return d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+}
+
+let ST={view:'routine',phase:'morning',isHome:true,log:loadLog(),streak:loadStreak()};
+let openProds=new Set();
+function setState(p){Object.assign(ST,p);render();}
+function isComplete(dl,home){
+  return CLEANSERS.some(c=>dl[c.id])
+    &&(home?HOME_TX.some(t=>dl[t.id]):!!dl[AWAY_TX.id])
+    &&!!dl[NIGHT_TX.id];
+}
+
+function toggle(id){
+  const dk=activeKey(),dl=ST.log[dk]||{};
+  let base={...dl};
+  const moistIds=MOISTURISERS.map(m=>m.id);
+  if(moistIds.includes(id)&&!dl[id]){moistIds.forEach(mid=>{base[mid]=false;});}
+  const updated={...ST.log,[dk]:{...base,[id]:!dl[id]}};
+  ST.log=updated;saveLog(updated);
+  if(dk===todayKey()&&isComplete(updated[dk]||{},ST.isHome)){
+    const ns=bumpStreak(ST.streak,dk);ST.streak=ns;
+    showToast('Routine complete · '+ns.count+' day streak 🌿');
+  }
+  pushToFirebase(updated, ST.streak);
+  render();
+}
+
+function navDay(delta){const n=dateOffset+delta;if(n>0||n<-30)return;dateOffset=n;render();}
+function goToday(){dateOffset=0;render();}
+function toggleProd(id){if(openProds.has(id))openProds.delete(id);else openProds.add(id);render();}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.remove('show');void t.offsetWidth;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3300);
+}
+function hex2rgb(h){return parseInt(h.slice(1,3),16)+','+parseInt(h.slice(3,5),16)+','+parseInt(h.slice(5,7),16);}
+
+function cardHTML(p,checked){
+  const pill=p.tag?`<div class="pill" style="background:rgba(${hex2rgb(p.color)},0.1);color:${p.color}">${p.tag}</div>`:'';
+  const isOpen=openProds.has(p.id);
+  if(!p.mechanism){
+    return`<div class="card${checked?' checked':''}" onclick="toggle('${p.id}')">
+      <div class="check-circle"></div>
+      <div class="card-body">${pill}<div class="card-name">${p.name}</div><div class="card-detail">${p.detail}</div><div class="card-hint">${p.hint}</div></div>
+    </div>`;
+  }
+  const badgeMap={green:'green',purple:'purple',orange:'orange',blue:'blue'};
+  const flagBadges=(p.flags||[]).map(f=>`<span class="prod-badge ${badgeMap[p.badgeColor]||''}">${f}</span>`).join('');
+  const ingHTML=p.ingredients?p.ingredients.map(i=>`<div class="prod-ingredient"><div class="prod-ing-dot"></div><div><div class="prod-ing-name">${i.name}</div><div class="prod-ing-detail">${i.detail}</div></div></div>`).join(''):'';
+  const bodyHTML=`<div class="prod-acc-body${isOpen?' open':''}${checked?' checked-body':''}">
+    <div class="prod-row">${flagBadges}</div>
+    ${p.mechanism?`<div class="prod-section-label">How it works</div><div class="prod-section-text">${p.mechanism}</div>`:''}
+    ${p.howToUse?`<div class="prod-section-label">How to use</div><div class="prod-section-text">${p.howToUse}</div>`:''}
+    ${ingHTML?`<div class="prod-section-label">Key ingredients</div><div class="prod-ingredient-grid">${ingHTML}</div>`:''}
+  </div>`;
+  return`<div class="prod-accordion">
+    <div class="prod-acc-head${checked?' checked':''}${isOpen?' open':''}" onclick="toggle('${p.id}')">
+      <div class="check-circle"></div>
+      <div class="card-body">${pill}<div class="card-name">${p.name}</div><div class="card-detail">${p.detail}</div><div class="card-hint">${p.hint}</div></div>
+      <div class="prod-expand-btn" onclick="event.stopPropagation();toggleProd('${p.id}')">${isOpen?'▲':'▼'}</div>
+    </div>${bodyHTML}
+  </div>`;
+}
+
+function secHead(l){return`<div class="sec-head"><span>${l}</span><hr/></div>`;}
+
+function renderMorning(dl){
+  const tx=ST.isHome
+    ?`<div class="info-box blue"><div class="info-text blue">Azelaic acid every morning. Salicylic acid on nose is optional — indoor days and after adapalene nights only. If using both: salicylic first → wait 5 min → azelaic acid over top.</div></div>${HOME_TX.map(p=>cardHTML(p,!!dl[p.id])).join('')}`
+    :cardHTML(AWAY_TX,!!dl[AWAY_TX.id]);
+  return`${secHead('Step 1 — Cleanser · pick one')}
+    ${CLEANSERS.map(p=>cardHTML(p,!!dl[p.id])).join('')}
+    ${secHead('Step 2 — Treatment')}
+    <div class="loc-row">
+      <button class="loc-btn${ST.isHome?' home':''}" onclick="setState({isHome:true})">🏠 Home</button>
+      <button class="loc-btn${ST.isHome?'':' away'}" onclick="setState({isHome:false})">✈ Away</button>
+    </div>${tx}
+    <div class="info-box grey"><div class="info-label">Compatibility note</div>
+    <div class="info-text">Salicylic acid (nose) → azelaic acid (full face) → SPF. No pH conflict — both within skin's natural acid mantle range. ✓</div></div>`;
+}
+
+function renderNight(dl){
+  const rem=dl[NIGHT_TX.id]?`<div class="info-box orange"><span style="font-size:13px">☀️</span><span class="info-text orange">Adapalene increases UV sensitivity — SPF is mandatory tomorrow morning. Use Simple cleanser only tonight — no PanOxyl before adapalene.</span></div>`:'';
+  return`${secHead('Step 1 — Treatment · required')}
+    ${cardHTML(NIGHT_TX,!!dl[NIGHT_TX.id])}${rem}
+    ${secHead('Step 2 — Moisturiser · optional · pick one')}
+    ${MOISTURISERS.map(p=>cardHTML(p,!!dl[p.id])).join('')}
+    <p class="apply-note">Apply adapalene first · wait 5+ minutes · then layer moisturiser on top if using.</p>`;
+}
+
+function renderTodayLog(dl){
+  const logged=Object.entries(dl).filter(([,v])=>v).map(([id])=>allProds().find(p=>p.id===id)).filter(Boolean);
+  const label=dateOffset===0?`Today's log`:`Log for ${fmtLabel(dateOffset)}`;
+  const items=logged.length===0?'<p class="log-empty">Nothing logged yet.</p>'
+    :logged.map(p=>`<div class="log-item"><div class="log-dot"></div><div><div class="log-name">${p.name}</div><div class="log-sub">${p.detail}</div></div></div>`).join('');
+  return`<div class="log-section"><div class="log-label">${label}</div>${items}</div>`;
+}
+
+function renderHistory(){
+  const prodMap=Object.fromEntries(allProds().map(p=>[p.id,p]));
+  const days=Object.keys(ST.log).sort((a,b)=>b.localeCompare(a)).slice(0,60);
+  if(!days.length)return`<div class="hist-empty"><div class="hist-empty-title">No records yet</div><div class="hist-empty-sub">Start logging your routine and it'll appear here.</div></div>`;
+  return days.map(day=>{
+    const dl=ST.log[day]||{};
+    const done=Object.entries(dl).filter(([,v])=>v).map(([id])=>prodMap[id]).filter(Boolean);
+    const date=new Date(day+'T12:00:00');
+    const label=date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    const isToday=day===todayKey();
+    const groups=[
+      {label:'🧼 Cleanser',items:done.filter(p=>CLEANSERS.find(c=>c.id===p.id))},
+      {label:'💧 Treatment',items:done.filter(p=>[...HOME_TX,AWAY_TX].find(c=>c.id===p.id))},
+      {label:'🌙 Night',items:done.filter(p=>p.id===NIGHT_TX.id||MOISTURISERS.find(m=>m.id===p.id))},
+    ].filter(g=>g.items.length>0);
+    const gHTML=groups.map(g=>`<div class="hist-group-lbl">${g.label}</div>${g.items.map(p=>`<div class="hist-prod"><div class="log-dot"></div><div><div class="hist-prod-name">${p.name}</div><div class="hist-prod-detail">${p.detail}</div></div></div>`).join('')}`).join('');
+    return`<div class="hist-day"><div class="hist-day-hd">
+      <div class="hist-day-lbl" style="color:${isToday?'#111':'#888'}">${isToday?'Today · '+label:label}</div>
+      ${done.length===0?'<span class="hist-nothing">nothing logged</span>':''}
+      <hr/><div class="hist-count">${done.length} product${done.length!==1?'s':''}</div>
+    </div>${gHTML}</div>`;
+  }).join('');
+}
+
+function renderGuide(){
+  return`<div class="guide-wrap">
+    <div class="guide-section">
+      <div class="guide-label">The Protocol — How It All Fits</div>
+      <div class="guide-card">
+        <div class="guide-card-name">Routine Architecture</div>
+        <div class="guide-card-sub">Four active mechanisms targeting different stages of the acne and PIH cycle — no overlap, no counteraction.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">🌅</div><div class="guide-rule-text"><strong>Morning:</strong> Cleanse (PanOxyl 4% or Simple) → salicylic acid on nose only if indoor + adapalene night (optional) → azelaic acid 20% full face (daily) → SPF 50+.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🌙</div><div class="guide-rule-text"><strong>Night:</strong> Simple gel only (never PanOxyl before adapalene) → dry fully 10 min → adapalene pea-sized full face → optional moisturiser after 5 min.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🔄</div><div class="guide-rule-text"><strong>Future — when tretinoin is introduced:</strong> Alternate adapalene and tretinoin on alternate nights. Salicylic acid morning only after adapalene nights — not after tretinoin nights when barrier is more compromised.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">💧</div><div class="guide-rule-text"><strong>Midday optional:</strong> If you wash or bathe midday, reapplying azelaic acid counts as the second daily application matching clinical trial dosing. Not required — take it when available.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">⏱</div><div class="guide-rule-text"><strong>Timeline:</strong> Adapalene takes 8–12 weeks for full effect. Purge in weeks 2–4 is the drug working — do not stop. Azelaic acid continues improving progressively through week 15.</div></div>
+      </div>
+    </div>
+    <div class="guide-section">
+      <div class="guide-label">Salicylic Acid — Exact Rules</div>
+      <div class="guide-card">
+        <div class="guide-card-name">When to Use It</div>
+        <div class="guide-card-sub">Salicylic acid has specific conditions — not a daily product, not full face.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">👃</div><div class="guide-rule-text"><strong>Nose only</strong> — sebaceous filaments are anatomically concentrated in the T-zone. Salicylic acid goes inside the pore to dissolve sebum. Azelaic acid handles everything else.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🏠</div><div class="guide-rule-text"><strong>Indoor days only</strong> — mild photosensitivity. Not required outdoors where SPF is your priority.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🌙</div><div class="guide-rule-text"><strong>After adapalene nights only</strong> — when tretinoin is introduced, never use salicylic acid the morning after a tretinoin night. Tretinoin drives more aggressive overnight cell turnover, leaving barrier more vulnerable.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">1️⃣</div><div class="guide-rule-text"><strong>Salicylic acid first, always</strong> — must penetrate clean open pores before azelaic acid film sits on top. Apply to nose → wait 5 min → azelaic acid full face.</div></div>
+      </div>
+    </div>
+    <div class="guide-section">
+      <div class="guide-label">Ingredient Interactions</div>
+      <div class="guide-card">
+        <div class="guide-card-name">Safe Combinations ✓</div>
+        <div class="guide-card-sub">Confirmed compatible based on mechanism and formulation chemistry.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">✓</div><div class="guide-rule-text"><strong>Salicylic Acid + Azelaic Acid:</strong> No pH conflict — both operate within skin's natural acid mantle range (4–5.5). Different targets: salicylic inside pore, azelaic at follicle wall surface. Safe to layer sequentially.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✓</div><div class="guide-rule-text"><strong>Benzoyl Peroxide + Azelaic Acid:</strong> Different mechanisms, no chemical interaction. Safe in rotation.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✓</div><div class="guide-rule-text"><strong>Adapalene (night) + Azelaic Acid (morning):</strong> 8–10 hours separation. Zero overlap. Safe split.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✓</div><div class="guide-rule-text"><strong>Adapalene + Moisturiser:</strong> Layering a barrier moisturiser after adapalene reduces irritation without blocking efficacy.</div></div>
+      </div>
+      <div class="guide-card" style="margin-top:10px">
+        <div class="guide-card-name">Avoid These ✗</div>
+        <div class="guide-card-sub">Interactions that reduce efficacy or cause irritation.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">✗</div><div class="guide-rule-text"><strong>Benzoyl Peroxide + Adapalene same session:</strong> BP oxidises adapalene and inactivates it. PanOxyl morning only. Simple gel every evening.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✗</div><div class="guide-rule-text"><strong>Adapalene on damp skin:</strong> Wait 10 minutes post-wash minimum. Wet skin amplifies irritation and unpredictable penetration.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✗</div><div class="guide-rule-text"><strong>Salicylic acid after tretinoin nights (future):</strong> Tretinoin drives aggressive overnight turnover — barrier too vulnerable for BHA the morning after.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">✗</div><div class="guide-rule-text"><strong>Azelaic Acid + Vitamin C high concentration:</strong> Not in current routine but worth knowing — both compete for the same oxidation pathway.</div></div>
+      </div>
+    </div>
+    <div class="guide-section">
+      <div class="guide-label">Sunscreen — Non-Negotiable Rules</div>
+      <div class="guide-card">
+        <div class="guide-card-name">Why SPF Matters Here</div>
+        <div class="guide-card-sub">Adapalene increases UV sensitivity. Without SPF, azelaic acid's tyrosinase inhibition is fighting UV-driven melanin production simultaneously — you are working against yourself.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">☀️</div><div class="guide-rule-text"><strong>Every morning</strong> — including cloudy days. UVA penetrates cloud cover and glass.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">📏</div><div class="guide-rule-text"><strong>Use enough:</strong> ¼ teaspoon (2 finger-lengths) for the face. Most people use 25–50% of the required amount, which dramatically reduces actual SPF delivered.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🔄</div><div class="guide-rule-text"><strong>Reapply every 2 hours outdoors.</strong> One morning application does not last all day.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">🌑</div><div class="guide-rule-text"><strong>PA++++</strong> — maximum UVA protection. Critical for preventing PIH darkening from the UV exposure azelaic acid is working to reverse.</div></div>
+      </div>
+    </div>
+    <div class="guide-section">
+      <div class="guide-label">Adapalene — Managing the Adjustment Phase</div>
+      <div class="guide-card">
+        <div class="guide-card-name">What to Expect Weeks 1–12</div>
+        <div class="guide-card-sub">Adapalene is a long game. Understanding the timeline prevents stopping early when it is actually working.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">📅</div><div class="guide-rule-text"><strong>Weeks 1–2:</strong> Dryness, peeling, mild redness are normal. Use moisturiser. Do not skip adapalene.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">📅</div><div class="guide-rule-text"><strong>Weeks 2–4:</strong> Purge phase — new breakouts appear as microcomedones are pushed to surface. This is the drug working. Push through.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">📅</div><div class="guide-rule-text"><strong>Weeks 6–8:</strong> Existing lesions clear. Skin texture begins improving. New breakouts less frequent.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">📅</div><div class="guide-rule-text"><strong>Weeks 8–12:</strong> Full effect. Pore clarity, reduced PIH, significantly lower comedone formation.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">💡</div><div class="guide-rule-text"><strong>If irritation is severe:</strong> Reduce to every other night temporarily. Do not stop — just buffer with more moisturiser.</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSync(){
+  const connected = syncStatus==='connected';
+  return`<div class="sync-wrap">
+    <div class="sync-section" style="padding-top:28px;border-top:none;">
+      <div class="sync-label">Sync Status</div>
+      <div class="sync-card">
+        <div class="sync-indicator">
+          <div class="sync-dot ${getSyncDotClass()}" id="sync-indicator-dot"></div>
+          <div class="sync-indicator-text" id="sync-indicator-text">${getSyncStatusText()}</div>
+        </div>
+        ${connected
+          ?`<div class="sync-card-sub">Your data syncs automatically across all devices using the same sync key.</div>
+            <button class="sync-btn danger" onclick="handleDisconnect()">Disconnect Sync</button>`
+          :`<div class="sync-card-sub">Connect Firebase to sync your skincare log across devices in real time.</div>`
+        }
+      </div>
+    </div>
+    ${!connected?`
+    <div class="sync-section">
+      <div class="sync-label">Firebase Setup</div>
+      <div class="sync-card">
+        <div class="sync-card-title">Connect Firebase</div>
+        <div class="sync-card-sub">You need a free Firebase Realtime Database. Takes 3 minutes to set up — instructions below.</div>
+        <input class="sync-input" id="fb-apikey" placeholder="API Key" value="${syncConfig?.apiKey||''}"/>
+        <input class="sync-input" id="fb-dburl" placeholder="Database URL (https://your-app.firebaseio.com)" value="${syncConfig?.databaseURL||''}"/>
+        <input class="sync-input" id="fb-projectid" placeholder="Project ID" value="${syncConfig?.projectId||''}"/>
+        <input class="sync-input" id="fb-userid" placeholder="Your sync key (any unique word — e.g. david2025)" value="${syncConfig?.userId||''}"/>
+        <div class="sync-status" id="fb-status"></div>
+        <button class="sync-btn primary" onclick="handleConnect()">Connect & Sync</button>
+      </div>
+    </div>
+    <div class="sync-section">
+      <div class="sync-label">How to Get Firebase Credentials</div>
+      <div class="sync-card">
+        <div class="sync-card-title">Setup Guide</div>
+        <div class="sync-card-sub">Free forever on the Spark plan — no credit card needed.</div>
+        <div class="guide-rule"><div class="guide-rule-icon">1</div><div class="guide-rule-text">Go to <strong>console.firebase.google.com</strong> and sign in with Google.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">2</div><div class="guide-rule-text">Click <strong>Add Project</strong> → name it anything → disable Google Analytics → Create.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">3</div><div class="guide-rule-text">In your project, click <strong>Build → Realtime Database → Create Database</strong> → choose any location → Start in test mode.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">4</div><div class="guide-rule-text">Go to <strong>Project Settings (gear icon) → General → Your apps → Add app → Web (&lt;/&gt;)</strong>. Register the app. Copy the firebaseConfig values shown.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">5</div><div class="guide-rule-text">Paste <strong>apiKey</strong>, <strong>databaseURL</strong> (from Realtime Database page), and <strong>projectId</strong> into the fields above. Set your own sync key — any unique word.</div></div>
+        <div class="guide-rule"><div class="guide-rule-icon">6</div><div class="guide-rule-text">Use the exact same credentials and sync key on every device you want to sync.</div></div>
+      </div>
+    </div>`:''}
+    <div class="sync-section">
+      <div class="sync-label">Export · Import · Backup</div>
+      <div class="sync-card">
+        <div class="sync-card-title">Manual Backup</div>
+        <div class="sync-card-sub">Export your full log as a JSON file. Import on any device to restore. Works without Firebase.</div>
+        <button class="sync-btn secondary" onclick="handleExport()">Export Data as JSON</button>
+        <button class="sync-btn secondary" onclick="document.getElementById('import-file').click()">Import Data from JSON</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)"/>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── SYNC HANDLERS ─────────────────────────────────
+window.handleConnect = async function(){
+  const apiKey = document.getElementById('fb-apikey')?.value?.trim();
+  const databaseURL = document.getElementById('fb-dburl')?.value?.trim();
+  const projectId = document.getElementById('fb-projectid')?.value?.trim();
+  const userId = document.getElementById('fb-userid')?.value?.trim();
+  const statusEl = document.getElementById('fb-status');
+  if(!apiKey||!databaseURL||!projectId||!userId){
+    if(statusEl){statusEl.className='sync-status err show';statusEl.textContent='All fields are required.';}
+    return;
+  }
+  if(statusEl){statusEl.className='sync-status info show';statusEl.textContent='Connecting…';}
+  await initFirebase({apiKey,databaseURL,projectId,authDomain:`${projectId}.firebaseapp.com`,storageBucket:`${projectId}.appspot.com`}, userId);
+  render();
+};
+
+window.handleDisconnect = function(){
+  disconnectFirebase();
+  render();
+};
+
+window.handleExport = function(){
+  const data = {log: ST.log, streak: ST.streak, exported: new Date().toISOString()};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='skincare-backup-'+todayKey()+'.json'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported ✓');
+};
+
+window.handleImport = function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.log){
+        ST.log = data.log;
+        saveLog(data.log);
+      }
+      if(data.streak){
+        ST.streak = data.streak;
+        localStorage.setItem(STREAK_KEY, JSON.stringify(data.streak));
+      }
+      showToast('Data imported ✓');
+      render();
+    }catch{
+      showToast('Import failed — invalid file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+};
+
+// ── GLOBAL HANDLERS ───────────────────────────────
+window.toggle = toggle;
+window.toggleProd = toggleProd;
+window.navDay = navDay;
+window.goToday = goToday;
+window.setState = setState;
+
+function render(){
+  const{view,phase,isHome,log,streak}=ST;
+  const dk=activeKey(),dl=log[dk]||{};
+  const steps=[CLEANSERS.some(c=>dl[c.id]),isHome?HOME_TX.some(t=>dl[t.id]):!!dl[AWAY_TX.id],!!dl[NIGHT_TX.id]];
+  const pct=Math.round(steps.filter(Boolean).length/3*100);
+  const done=steps.every(Boolean);
+  const totalDays=Object.keys(log).filter(k=>Object.values(log[k]||{}).some(Boolean)).length;
+  const isToday=dateOffset===0;
+  const dateLabel=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
+
+  let mainContent;
+  if(view==='guide'){mainContent=renderGuide();}
+  else if(view==='history'){mainContent=`<div class="hist-wrap">${renderHistory()}</div>`;}
+  else if(view==='sync'){mainContent=renderSync();}
+  else{
+    mainContent=`
+      <div class="nav-row" style="padding:0 28px">
+        <button class="phase-btn${phase==='morning'?' on':''}" onclick="setState({phase:'morning'})">☀ Morning</button>
+        <button class="phase-btn${phase==='night'?' on':''}" onclick="setState({phase:'night'})">☽ Night</button>
+      </div>
+      <div class="ct">${phase==='morning'?renderMorning(dl):renderNight(dl)}${renderTodayLog(dl)}</div>`;
+  }
+
+  document.getElementById('app').innerHTML=`
+    <div class="hd">
+      <div class="eyebrow">Skincare Protocol</div>
+      <div class="title">Daily<br/><em>Routine</em></div>
+      <div class="dateline">${dateLabel}</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-val">${streak.count}</span><span class="stat-lbl">Day streak</span></div>
+      <div class="stat"><span class="stat-val">${totalDays}</span><span class="stat-lbl">Days logged</span></div>
+      <div class="stat"><span class="stat-val">${pct+'%'}</span><span class="stat-lbl">${isToday?'Today':'That day'}</span></div>
+      <div class="divider"></div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+      ${done?'<div class="done-badge">Done ✓</div>':''}
+    </div>
+    <div class="date-nav">
+      <button class="date-nav-btn" onclick="navDay(-1)" ${dateOffset<=-30?'disabled':''}>‹</button>
+      <div class="date-nav-center">
+        <div class="date-nav-label">${fmtLabel(dateOffset)}</div>
+        <div class="date-nav-sub">${fmtSub(dateOffset)}</div>
+      </div>
+      <button class="date-nav-btn" onclick="navDay(1)" ${dateOffset>=0?'disabled':''}>›</button>
+      <button class="date-nav-today" onclick="goToday()">Today</button>
+    </div>
+    ${dateOffset<0?`<div class="past-banner show">✦ Logging for a past day — data saves to ${activeKey()}</div>`:''}
+    <div class="nav-row">
+      <button class="nav-btn${view==='routine'?' on':''}" onclick="setState({view:'routine'})">Routine</button>
+      <button class="nav-btn${view==='history'?' on':''}" onclick="setState({view:'history'})">History</button>
+      <button class="nav-btn${view==='guide'?' on':''}" onclick="setState({view:'guide'})">Guide</button>
+      <button class="nav-btn${view==='sync'?' on':''}" onclick="setState({view:'sync'})">Sync</button>
+    </div>
+    ${mainContent}`;
+}
+
+// Auto-reconnect if config exists
+if(syncConfig){
+  initFirebase(syncConfig, syncConfig.userId);
+}
+
+render();
+</script>
+</body>
+</html>
